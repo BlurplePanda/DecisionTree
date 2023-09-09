@@ -3,9 +3,9 @@
 // You may not distribute it in any other way without permission.
 
 /* Code for COMP103 - 2023T2, Assignment 4
- * Name:
- * Username:
- * ID:
+ * Name: Amy Booth
+ * Username: boothamy
+ * ID: 300653766
  */
 
 /**
@@ -17,7 +17,7 @@
  *  proceed down the tree.  
  * All the leaf nodes have the decision (the kind of animal in the example tree).
  *
- * The decision tree may be a predermined decision tree, or it can be a "growing"
+ * The decision tree may be a predetermined decision tree, or it can be a "growing"
  * decision tree, where the user can add questions and decisions to the tree whenever
  * the tree gives a wrong answer.
  *
@@ -36,6 +36,9 @@ import java.awt.Color;
 public class DecisionTree {
 
     public DTNode theTree;    // root of the decision tree;
+    public enum Branch {
+        yes, no
+    }
 
     /**
      * Setup the GUI and make a sample tree
@@ -74,8 +77,32 @@ public class DecisionTree {
      */
     public void printTree(){
         UI.clearText();
-        /*# YOUR CODE HERE */
+        UI.println(nodeText(theTree));
+        printSubTree(theTree.getYes(), Branch.yes);
+        printSubTree(theTree.getNo(), Branch.no);
+    }
 
+    /**
+     * Helper method for printing trees
+     * Prints the subtree(s) of a node
+     * With "yes:" or "no:" in front, to show which branch it is in
+     * @param node the node at the "root" of the subtree (cannot be root of a tree)
+     * @param branch enum to represent if it is in the "yes" or "no" branch of the previous node
+     */
+    public void printSubTree(DTNode node, Branch branch) {
+        if (node == null) { return; }
+        UI.println(branch.name()+":"+nodeText(node));
+        printSubTree(node.getYes(), Branch.yes);
+        printSubTree(node.getNo(), Branch.no);
+    }
+
+    /**
+     * Helper method to print node text with question marks.
+     * @param node the node to get text from
+     * @return the node text with a question mark at the end if it is not an answer
+     */
+    public String nodeText(DTNode node) {
+        return node.getText()+(!node.isAnswer()?"?":"");
     }
 
     /**
