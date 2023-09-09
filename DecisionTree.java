@@ -60,7 +60,7 @@ public class DecisionTree {
         UI.addButton("Print Tree", this::printTree);
         UI.addButton("Run Tree", this::runTree);
         UI.addButton("Grow Tree", this::growTree);
-        // UI.addButton("Save Tree", this::saveTree);  // for completion
+        UI.addButton("Save Tree", this::saveTree);  // for completion
         // UI.addButton("Draw Tree", this::drawTree);  // for challenge
         UI.addButton("Reset", () -> {
             loadTree("sample-animal-tree.txt");
@@ -172,6 +172,28 @@ public class DecisionTree {
 
         }
 
+    }
+
+    public void saveTree() {
+        try {
+            PrintStream out = new PrintStream(UIFileChooser.save());
+            saveSubTree(theTree, out);
+            out.close();
+        } catch (IOException e) {
+            UI.println("File saving failed: "+e);
+        } catch (NullPointerException e) {}
+    }
+
+    public void saveSubTree(DTNode node, PrintStream out) {
+        if (node == null) { return; }
+        if (node.isAnswer()) {
+            out.print("Answer: ");
+        } else {
+            out.print("Question: ");
+        }
+        out.println(node.getText());
+        saveSubTree(node.getYes(), out);
+        saveSubTree(node.getNo(), out);
     }
 
     // You will need to define methods for the Completion and Challenge parts.
