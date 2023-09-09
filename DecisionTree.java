@@ -117,16 +117,16 @@ public class DecisionTree {
         runSubTree(theTree);
     }
 
-    public void runSubTree(DTNode node) {
+    public DTNode runSubTree(DTNode node) {
         if (node.isAnswer()) {
             UI.println("The answer is: "+node.getText());
-            return;
+            return node;
         }
         boolean yes = UI.askBoolean("Is it true: " + node.getText() + " (Y/N): ");
         if (yes) {
-            runSubTree(node.getYes());
+            return runSubTree(node.getYes());
         } else {
-            runSubTree(node.getNo());
+            return runSubTree(node.getNo());
         }
     }
 
@@ -144,7 +144,19 @@ public class DecisionTree {
      *  - adds two new children (leaf nodes) to the node with the two decisions.
      */
     public void growTree () {
-        /*# YOUR CODE HERE */
+        DTNode leaf = runSubTree(theTree);
+        boolean correctAnswer = UI.askBoolean("Is that right? ");
+        if (!correctAnswer) {
+            String actualAnswer = UI.askString("OK, what should the answer be? ");
+            String property = UI.askString("Oh. I can't distinguish a "+leaf.getText()+" from a "
+                    +actualAnswer+"\n"+"Tell me something that's true for a "+actualAnswer+" but not for a "
+                    +leaf.getText()+"?\n"+"Property: ");
+            DTNode answerYes = new DTNode(actualAnswer);
+            DTNode answerNo = new DTNode(leaf.getText());
+            leaf.setText(property);
+            leaf.setChildren(answerYes, answerNo);
+
+        }
 
     }
 
