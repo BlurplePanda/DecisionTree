@@ -78,8 +78,8 @@ public class DecisionTree {
     public void printTree(){
         UI.clearText();
         UI.println(nodeText(theTree));
-        printSubTree(theTree.getYes(), Branch.yes);
-        printSubTree(theTree.getNo(), Branch.no);
+        printSubTree(theTree.getYes(), Branch.yes, 1);
+        printSubTree(theTree.getNo(), Branch.no, 1);
     }
 
     /**
@@ -89,11 +89,11 @@ public class DecisionTree {
      * @param node the node at the "root" of the subtree (cannot be root of a tree)
      * @param branch enum to represent if it is in the "yes" or "no" branch of the previous node
      */
-    public void printSubTree(DTNode node, Branch branch) {
+    public void printSubTree(DTNode node, Branch branch, int layer) {
         if (node == null) { return; }
-        UI.println(branch.name()+":"+nodeText(node));
-        printSubTree(node.getYes(), Branch.yes);
-        printSubTree(node.getNo(), Branch.no);
+        UI.print((branch.name()+":"+nodeText(node)).indent(layer*4));
+        printSubTree(node.getYes(), Branch.yes, layer+1);
+        printSubTree(node.getNo(), Branch.no, layer+1);
     }
 
     /**
