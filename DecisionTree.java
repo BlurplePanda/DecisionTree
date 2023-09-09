@@ -113,8 +113,21 @@ public class DecisionTree {
      * and depending on the answer, goes to the "yes" child or the "no" child.
      */
     public void runTree() {
-        /*# YOUR CODE HERE */
+        UI.clearText();
+        runSubTree(theTree);
+    }
 
+    public void runSubTree(DTNode node) {
+        if (node.isAnswer()) {
+            UI.println("The answer is: "+node.getText());
+            return;
+        }
+        boolean yes = UI.askBoolean("Is it true: " + node.getText() + " (Y/N): ");
+        if (yes) {
+            runSubTree(node.getYes());
+        } else {
+            runSubTree(node.getNo());
+        }
     }
 
     /**
