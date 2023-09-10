@@ -61,7 +61,7 @@ public class DecisionTree {
         UI.addButton("Run Tree", this::runTree);
         UI.addButton("Grow Tree", this::growTree);
         UI.addButton("Save Tree", this::saveTree);  // for completion
-        // UI.addButton("Draw Tree", this::drawTree);  // for challenge
+        UI.addButton("Draw Tree", this::drawTree);  // for challenge
         UI.addButton("Reset", () -> {
             loadTree("sample-animal-tree.txt");
         });
@@ -196,7 +196,21 @@ public class DecisionTree {
         saveSubTree(node.getNo(), out);
     }
 
-    // You will need to define methods for the Completion and Challenge parts.
+    public void drawTree() {
+        UI.clearGraphics();
+        drawSubTree(theTree, 0, UI.getCanvasHeight(), 60);
+    }
+
+    public void drawSubTree(DTNode node, double top, double height, double x) {
+        if (node == null) { return; }
+        if (!node.isAnswer()) {
+            UI.drawLine(x, top + height / 2, x + 150, top+height/4);
+            UI.drawLine(x, top+height/2, x+150, top+3*height/4);
+        }
+        node.draw(x, top+height/2);
+        drawSubTree(node.getYes(), top, height/2, x+150);
+        drawSubTree(node.getNo(), top+height/2, height/2, x+150);
+    }
 
     // Written for you
 
