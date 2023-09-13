@@ -158,6 +158,7 @@ public class DecisionTree {
      *  - adds two new children (leaf nodes) to the node with the two decisions.
      */
     public void growTree() {
+        UI.clearText();
         DTNode leaf = runSubTree(theTree); // the leaf node it ends up at
         boolean correctAnswer = UI.askBoolean("Is that right? ");
         if (!correctAnswer) {
@@ -176,12 +177,15 @@ public class DecisionTree {
 
     public void saveTree() {
         try {
-            PrintStream out = new PrintStream(UIFileChooser.save());
-            saveSubTree(theTree, out);
-            out.close();
+            String file = UIFileChooser.save();
+            if(file != null) {
+                PrintStream out = new PrintStream(file);
+                saveSubTree(theTree, out);
+                out.close();
+            }
         } catch (IOException e) {
             UI.println("File saving failed: "+e);
-        } catch (NullPointerException e) {}
+        }
     }
 
     public void saveSubTree(DTNode node, PrintStream out) {
