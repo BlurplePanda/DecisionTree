@@ -207,10 +207,13 @@ public class DecisionTree {
 
     public void drawSubTree(DTNode node, double top, double height, double x) {
         if (node == null) { return; }
-        if (!node.isAnswer()) {
-            UI.drawLine(x, top + height / 2, x + 150, top+height/4);
-            UI.drawLine(x, top+height/2, x+150, top+3*height/4);
+        if (!node.isAnswer()) { // only draw line(s) to child node if there is a child node
+            UI.setColor(Color.green);
+            UI.drawLine(x, top + height / 2, x + 150, top+height/4); // yes/up line
+            UI.setColor(Color.red);
+            UI.drawLine(x, top+height/2, x+150, top+3*height/4); // no/down line
         }
+        UI.setColor(Color.black);
         node.draw(x, top+height/2);
         drawSubTree(node.getYes(), top, height/2, x+150);
         drawSubTree(node.getNo(), top+height/2, height/2, x+150);
