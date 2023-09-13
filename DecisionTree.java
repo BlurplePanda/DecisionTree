@@ -37,12 +37,12 @@ public class DecisionTree {
 
     public DTNode theTree;    // root of the decision tree;
 
-    public enum Branch {
+    public enum Branch { // type to record which branch it's on
         yes, no
     }
 
     /**
-     * Setup the GUI and make a sample tree
+     * Set up the GUI and make a sample tree
      */
     public static void main(String[] args) {
         DecisionTree dt = new DecisionTree();
@@ -74,11 +74,11 @@ public class DecisionTree {
      * The root node should be at the top, followed by its "yes" subtree,
      * and then its "no" subtree.
      * Needs a recursive "helper method" which is passed a node.
-     *
+     * <p>
      * COMPLETION:
      * Each node should be indented by how deep it is in the tree.
      * The recursive "helper method" is passed a node and an indentation string.
-     *  (The indentation string will be a string of space characters)
+     * (The indentation string will be a string of space characters)
      */
     public void printTree() {
         UI.clearText();
@@ -91,7 +91,8 @@ public class DecisionTree {
      * Helper method for printing trees
      * Prints the subtree(s) of a node
      * With "yes:" or "no:" in front, to show which branch it is in
-     * @param node the node at the "root" of the subtree (cannot be root of a tree)
+     *
+     * @param node   the node at the "root" of the subtree (cannot be root of a tree)
      * @param branch enum to represent if it is in the "yes" or "no" branch of the previous node
      */
     public void printSubTree(DTNode node, Branch branch, int layer) {
@@ -105,6 +106,7 @@ public class DecisionTree {
 
     /**
      * Helper method to print node text with question marks.
+     *
      * @param node the node to get text from
      * @return the node text with a question mark at the end if it is not an answer
      */
@@ -128,8 +130,9 @@ public class DecisionTree {
      * helper method for runTree and growTree
      * runs through a subtree until it reaches a leaf node
      * prints and returns the leaf node
+     *
      * @param node the "root" of the subtree
-     * @return the leaf node it ends at
+     * @return the leaf node it ends at (used for growing)
      */
     public DTNode runSubTree(DTNode node) {
         if (node.isAnswer()) {
@@ -147,15 +150,15 @@ public class DecisionTree {
     /**
      * Grow the tree by allowing the user to extend the tree.
      * Like runTree, it starts at the top (of theTree), and works its way down the tree
-     *  until it finally gets to a leaf node. 
+     * until it finally gets to a leaf node.
      * If the current node has a question, then it asks the question in the node,
      * and depending on the answer, goes to the "yes" child or the "no" child.
      * If the current node is a leaf it prints the decision, and asks if it is right.
      * If it was wrong, it
-     *  - asks the user what the decision should have been,
-     *  - asks for a question to distinguish the right decision from the wrong one
-     *  - changes the text in the node to be the question
-     *  - adds two new children (leaf nodes) to the node with the two decisions.
+     * - asks the user what the decision should have been,
+     * - asks for a question to distinguish the right decision from the wrong one
+     * - changes the text in the node to be the question
+     * - adds two new children (leaf nodes) to the node with the two decisions.
      */
     public void growTree() {
         UI.clearText();
@@ -175,21 +178,35 @@ public class DecisionTree {
 
     }
 
+    /**
+     * Saves the tree to a file chosen/created by the user
+     * Saves it in the correct format to be able to be loaded back using loadTree
+     */
     public void saveTree() {
         try {
-            String file = UIFileChooser.save();
-            if(file != null) {
-                PrintStream out = new PrintStream(file);
+            String file = UIFileChooser.save(); // choose file to save to
+            if (file != null) { // ensure a file has been chosen (to avoid null pointer exceptions)
+                PrintStream out = new PrintStream(file); // create PrintStream (writer) to file
                 saveSubTree(theTree, out);
                 out.close();
             }
         } catch (IOException e) {
-            UI.println("File saving failed: "+e);
+            UI.println("File saving failed: " + e);
         }
     }
 
+    /**
+     * helper method for saveTree
+     * recursively runs through every node of the tree and saves to file
+     *
+     * @param node the "root" of the subtree
+     * @param out  the PrintStream (writer to file) to use - ensures all is written to same file.
+     */
     public void saveSubTree(DTNode node, PrintStream out) {
-        if (node == null) { return; }
+        if (node == null) {
+            return;
+        }
+
         if (node.isAnswer()) {
             out.print("Answer: ");
         } else {
@@ -200,23 +217,44 @@ public class DecisionTree {
         saveSubTree(node.getNo(), out);
     }
 
+    /**
+     * Draws the tree on the graphics pane
+     * Left to right
+     * Yes above and no below each parent node (both to the right of it)
+     */
     public void drawTree() {
         UI.clearGraphics();
         drawSubTree(theTree, 0, UI.getCanvasHeight(), 60);
     }
 
+    /**
+     * Helper method for drawTree
+     * Draws lines between nodes first to avoid visual overlap
+     * Lines are green for "yes" branch and red for "no" branch
+     * Then draw the node and recursively its children and their children etc.
+     * Draws each layer increasingly close together vertically
+     * since each subtree has to be in half the height of its parent
+     * Each layer is 150 further to the right
+     *
+     * @param node   the "root" of the tree
+     * @param top    the top (visually) of the area the subtree can take up
+     * @param height the height of the area the subtree can take up
+     * @param x      the x position to draw the node at
+     */
     public void drawSubTree(DTNode node, double top, double height, double x) {
-        if (node == null) { return; }
+        if (node == null) {
+            return;
+        }
         if (!node.isAnswer()) { // only draw line(s) to child node if there is a child node
             UI.setColor(Color.green);
-            UI.drawLine(x, top + height / 2, x + 150, top+height/4); // yes/up line
+            UI.drawLine(x, top + height / 2, x + 150, top + height / 4); // yes/up line
             UI.setColor(Color.red);
-            UI.drawLine(x, top+height/2, x+150, top+3*height/4); // no/down line
+            UI.drawLine(x, top + height / 2, x + 150, top + 3 * height / 4); // no/down line
         }
         UI.setColor(Color.black);
-        node.draw(x, top+height/2);
-        drawSubTree(node.getYes(), top, height/2, x+150);
-        drawSubTree(node.getNo(), top+height/2, height/2, x+150);
+        node.draw(x, top + height / 2);
+        drawSubTree(node.getYes(), top, height / 2, x + 150);
+        drawSubTree(node.getNo(), top + height / 2, height / 2, x + 150);
     }
 
     // Written for you
@@ -225,7 +263,7 @@ public class DecisionTree {
      * Loads a decision tree from a file.
      * Each line starts with either "Question:" or "Answer:" and is followed by the text
      * Calls a recursive method to load the tree and return the root node,
-     *  and assigns this node to theTree.
+     * and assigns this node to theTree.
      */
     public void loadTree(String filename) {
         if (!Files.exists(Path.of(filename))) {
@@ -242,9 +280,9 @@ public class DecisionTree {
     /**
      * Loads a tree (or subtree) from a Scanner and returns the root.
      * The first line has the text for the root node of the tree (or subtree)
-     * It should make the node, and 
-     *   if the first line starts with "Question:", it loads two subtrees (yes, and no)
-     *    from the scanner and add them as the  children of the node,
+     * It should make the node, and
+     * if the first line starts with "Question:", it loads two subtrees (yes, and no)
+     * from the scanner and add them as the  children of the node,
      * Finally, it should return the  node.
      */
     public DTNode loadSubTree(Queue<String> lines) {
